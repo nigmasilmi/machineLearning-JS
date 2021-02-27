@@ -1,0 +1,54 @@
+// each row is for one athlete
+// each column represents the distance achieved per attempt
+const jumpData = tf.tensor([
+  [70,50,60],
+  [52,84,80],
+  [80,66,70],
+  [73,55,68],
+]);
+
+// each row is for one athlete
+// column [0] is for athlete id
+// colun [1] is for height in cms
+const athleteData = tf.tensor([
+  [1, 175],
+  [2, 165],
+  [3, 170],
+  [4, 167],
+]);
+
+// the aim is to add all the attempts per athlete and concatenate with the 
+// corresponding athlete data
+jumpData.sum(1) // [180, 216, 216, 196]
+
+jumpData.sum(1).shape // [4]
+athleteData.shape // [4,2]
+
+// because of different shapes, we can not concatenate jumpData.sum with athleteData
+// so...
+// option 1
+
+const result = jumpData.sum(1, true).concat(athleteData, 1)
+
+//Tensor
+    [[180, 1, 175],
+     [216, 2, 165],
+     [216, 3, 170],
+     [196, 4, 167]]
+
+// option 2
+
+const result2 = jumpData.sum(1).expandDims(1)
+// Tensor
+    [[180],
+     [216],
+     [216],
+     [196]]
+
+jumpData.sum(1).expandDims(1).concat(athleteData, 1)
+
+// Tensor
+    [[180, 1, 175],
+     [216, 2, 165],
+     [216, 3, 170],
+     [196, 4, 167]]

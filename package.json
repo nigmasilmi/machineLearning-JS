@@ -14,5 +14,10 @@
     "javaScript"
   ],
   "author": "Nigma Silmi with Stephen Grider",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^0.1.17",
+    "lodash": "^4.17.21",
+    "shuffle-seed": "^1.1.6"
+  }
 }

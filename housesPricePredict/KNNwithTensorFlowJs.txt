@@ -1,0 +1,73 @@
+// Remember KNN Algorithm
+// Find distance between features and prediction point
+// Sort from lowest point to greatest
+// Take the top k records
+// Average the label value of thos top K records
+
+
+
+const features = tf.tensor([
+[-121, 47],
+[-121.2, 46.5],
+[-122, 46.4],
+[-120.9, 46.7],
+]);
+
+const labels = tf.tensor([
+[200],
+[250],
+[225],
+[240],
+]);
+
+const predictionPoint = tf.tensor([-121, 46])
+
+// Find distance between features and prediction point
+features
+    .sub(predictionPoint)
+    .pow(2)
+    .sum(1)
+    .pow(0.5)
+
+
+// Sort from lowest point to greatest
+// If we sort the distances, the ordering of the labels will be off
+// Tensors can't be sorted
+
+// concat with labels to preserve de correspondence
+features
+    .sub(predictionPoint)
+    .pow(2)
+    .sum(1)
+    .pow(0.5)
+    .expandDims(1)
+    .concat(labels, 1)
+
+
+// to sort we need to unstack in a normal JS array
+features
+  .sub(predictionPoint)
+.pow(2)
+.sum(1)
+.pow(0.5)
+.expandDims(1)
+.concat(labels, 1)
+.unstack()
+.sort((a, b)=>{return a.get(0) > b.get(0)? 1:-1})
+
+// Take the top k records
+
+const k=2;
+features
+    .sub(predictionPoint)
+    .pow(2)
+    .sum(1)
+    .pow(0.5)
+    .expandDims(1)
+    .concat(labels, 1)
+    .unstack()
+    .sort((a, b)=>{return a.get(0) > b.get(0)? 1:-1})
+    .slice(0,k)
+    .reduce((acc, pair)=>{
+    return acc + pair.get(1)
+}, 0) / k ///// 220, es la predicción del costo de una vivienda en esas coordenadas
