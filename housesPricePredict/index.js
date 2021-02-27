@@ -5,9 +5,13 @@ const tf = require("@tensorflow/tfjs");
 const loadCSV = require("./load-csv");
 
 const knn = (features, labels, predictionPoint, k) => {
+  const { mean, variance } = tf.moments(features, 0);
+  const scaledPrediction = predictionPoint.sub(mean).div(variance.pow(0.5));
   return (
     features
-      .sub(predictionPoint)
+      .sub(mean)
+      .div(variance.pow(0.5))
+      .sub(scaledPrediction)
       .pow(2)
       .sum(1)
       .pow(0.5)
@@ -29,7 +33,7 @@ let { features, labels, testFeatures, testLabels } = loadCSV(
   {
     shuffle: true,
     splitTest: 10,
-    dataColumns: ["lat", "long"],
+    dataColumns: ["lat", "long", "sqft_lot", "sqft_living"],
     labelColumns: ["price"],
   }
 );
@@ -45,5 +49,12 @@ labels = tf.tensor(labels);
 // testFeatures = tf.tensor(testFeatures);
 // testLabels = tf.tensor(testLabels);
 
-const result = knn(features, labels, tf.tensor(testFeatures[0]), 10);
-console.log("Guess", result, "real value: ", testLabels[0][0]);
+testFeatures.forEach((testpoint, index) => {
+  const result = knn(features, labels, tf.tensor(testpoint), 10);
+  const err = ((testLabels[index][0] - result) / testLabels[index][0]) * 100;
+  console.log("Guess", result, "real value: ", testLabels[index][0]);
+  console.log("Error", err, "%");
+});
+
+// debugging node --inspect-brk index.js
+// then in chrome about:inspect
